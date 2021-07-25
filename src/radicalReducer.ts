@@ -1,4 +1,5 @@
 import ChineseCharacterToEnglishKey from './ChineseCharacterToEnglishKey.json'
+import { getIsAllCumulatedMapValid } from './utils/getIsAllCumulatedMapValid'
 import { getIsUpdatedIndexValid } from './utils/getIsUpdatedIndexValid'
 import { getRandomInteger } from './utils/getRandomInteger'
 import {
@@ -19,22 +20,21 @@ interface Action {
   type: ActionType
 }
 
+export interface CumulatedMap {
+  radical: string
+  isValid: boolean
+}
+
 interface State {
   selectedChineseCharacterMapping: SelectedChineseCharacterMapping
-  cumulated: string[]
-  isCurrentTypingCorrect: boolean
-  isCumulatedCorrect: boolean
-  isAllTypingCorrect: boolean
+  cumulatedMapList: CumulatedMap[]
 }
 
 const getInitialState = (randomNumber: number) => {
   return {
     selectedChineseCharacterMapping:
       getSelectedChineseCharacterMapping(randomNumber),
-    cumulated: [],
-    isCurrentTypingCorrect: false,
-    isCumulatedCorrect: false,
-    isAllTypingCorrect: false,
+    cumulatedMapList: [],
   }
 }
 
@@ -43,16 +43,13 @@ const randomNumber = getRandomInteger({ max: numberOfCharacters })
 export const initialState: State = {
   selectedChineseCharacterMapping:
     getSelectedChineseCharacterMapping(randomNumber),
-  cumulated: [],
-  isCurrentTypingCorrect: false,
-  isCumulatedCorrect: false,
-  isAllTypingCorrect: false,
+  cumulatedMapList: [],
 }
 
 const radicalReducer = (state: State, action: Action) => {
   const currentRadicalList = state.selectedChineseCharacterMapping.radicalList
   const max = currentRadicalList.length
-  const currentTypingIndex = state.cumulated.length
+  const currentTypingIndex = state.cumulatedMapList.length
 
   switch (action.type) {
     case 'backspace': {
@@ -70,7 +67,7 @@ const radicalReducer = (state: State, action: Action) => {
       return {
         ...state,
         currentTypingIndex: updatedIndex,
-        cumulated: state.cumulated.slice(0, updatedIndex),
+        cumulatedMapList: state.cumulatedMapList.slice(0, updatedIndex),
       }
     }
 
@@ -86,22 +83,22 @@ const radicalReducer = (state: State, action: Action) => {
         return state
       }
 
-      const updatedCumulated = [
-        ...state.cumulated.slice(0, currentTypingIndex),
-        action.payload.typingRadical,
-        ...state.cumulated.slice(updatedIndex),
+      const appendedTypingRadical = action.payload.typingRadical
+
+      const appended: CumulatedMap = {
+        radical: appendedTypingRadical,
+        isValid:
+          appendedTypingRadical === currentRadicalList[currentTypingIndex],
+      }
+
+      const updatedCumulatedMapList = [
+        ...state.cumulatedMapList.slice(0, currentTypingIndex),
+        appended,
       ]
 
-      const isCurrentTypingCorrect =
-        updatedCumulated[currentTypingIndex] ===
-        currentRadicalList[currentTypingIndex]
-
-      const isCumulatedCorrect =
-        updatedIndex === 1
-          ? isCurrentTypingCorrect
-          : state.isCumulatedCorrect && isCurrentTypingCorrect
-
-      const isAllTypingCorrect = isCumulatedCorrect && updatedIndex === max
+      const isAllTypingCorrect =
+        updatedIndex === max &&
+        getIsAllCumulatedMapValid(updatedCumulatedMapList)
 
       if (isAllTypingCorrect) {
         return getInitialState(getRandomInteger({ max: numberOfCharacters }))
@@ -110,10 +107,7 @@ const radicalReducer = (state: State, action: Action) => {
       return {
         ...state,
         currentTypingIndex: updatedIndex,
-        cumulated: updatedCumulated,
-        isCurrentTypingCorrect,
-        isCumulatedCorrect,
-        isAllTypingCorrect,
+        cumulatedMapList: updatedCumulatedMapList,
       }
     }
 

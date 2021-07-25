@@ -50,7 +50,7 @@ const App = () => {
         radicalList={state.selectedChineseCharacterMapping.radicalList}
       />
       <TypingRadicalPreview
-        cumulated={state.cumulated}
+        cumulatedMapList={state.cumulatedMapList}
         maxLength={state.selectedChineseCharacterMapping.radicalList.length}
       />
       <KeyboardWrapper>
