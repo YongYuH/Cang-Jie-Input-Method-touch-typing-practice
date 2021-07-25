@@ -70,7 +70,10 @@ const App = () => {
         questionChineseCharacter={currentQuestionChineseCharacter}
         radicalList={currentQuestionRadicalList}
       />
-      <TypingRadicalPreview cumulated={state.cumulated} />
+      <TypingRadicalPreview
+        cumulated={state.cumulated}
+        currentIndex={state.currentTypingIndex}
+      />
       <KeyboardWrapper>
         <CangJieKeyboard />
       </KeyboardWrapper>
