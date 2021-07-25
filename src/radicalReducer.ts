@@ -1,4 +1,4 @@
-import cangJieKeyBinding from './cangJieKeyBinding.json'
+import CangJieKeyBinding from './CangJieKeyBinding.json'
 interface ActionPayload {
   currentPressedKey: string
 }
@@ -38,7 +38,7 @@ const radicalReducer = (state: State, action: Action) => {
     }
   }
 
-  const typingRadical = cangJieKeyBinding[currentPressedKey]
+  const typingRadical = CangJieKeyBinding[currentPressedKey]
 
   if (typingRadical === undefined) {
     return state
@@ -56,7 +56,7 @@ const radicalReducer = (state: State, action: Action) => {
         currentIndex: updatedIndex,
         cumulated: [
           ...state.cumulated.slice(0, state.currentIndex),
-          cangJieKeyBinding[currentPressedKey],
+          CangJieKeyBinding[currentPressedKey],
           ...state.cumulated.slice(updatedIndex),
         ],
       }

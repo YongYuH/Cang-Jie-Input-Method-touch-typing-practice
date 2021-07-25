@@ -2,16 +2,12 @@ import React from 'react'
 import styled from 'styled-components'
 
 import Grid from './components/Grid'
+import Radical from './components/Radical'
 
 const Placeholder = styled.div`
   border-bottom: 1px solid black;
   width: 20px;
   height: 27px;
-`
-
-const Text = styled.div`
-  font-size: 20px;
-  line-height: 28px;
 `
 
 interface TypingRadicalPreviewProps {
@@ -31,7 +27,7 @@ const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
         radical === ' ' ? (
           <Placeholder key={`radical-${index}`} />
         ) : (
-          <Text key={`radical-${index}`}>{radical}</Text>
+          <Radical key={`radical-${index}`}>{radical}</Radical>
         )
       )}
     </Grid>
