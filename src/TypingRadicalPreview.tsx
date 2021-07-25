@@ -16,11 +16,13 @@ const Placeholder = styled.div<PlaceholderProps>`
 
 interface TypingRadicalPreviewProps {
   cumulated: string[]
-  currentIndex: number
+  maxLength: number
 }
 
 const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
-  const { cumulated, currentIndex } = props
+  const { cumulated, maxLength } = props
+
+  const lengthOfPlaceholder = maxLength - cumulated.length
 
   return (
     <Grid
@@ -28,16 +30,16 @@ const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
       gridAutoFlow="column"
       gridColumnGap="4px"
     >
-      {cumulated.map((radical, index) =>
-        radical === ' ' ? (
-          <Placeholder
-            key={`radical-${index}`}
-            isHighlighted={index === currentIndex}
-          />
-        ) : (
-          <Radical key={`radical-${index}`}>{radical}</Radical>
-        )
-      )}
+      {cumulated.map((radical, index) => (
+        <Radical key={`radical-${index}`}>{radical}</Radical>
+      ))}
+      {Array(lengthOfPlaceholder)
+        .fill(' ')
+        .map((placeholder, index) => (
+          <Placeholder key={`placeholder-${index}`} isHighlighted={index === 0}>
+            {placeholder}
+          </Placeholder>
+        ))}
     </Grid>
   )
 }
