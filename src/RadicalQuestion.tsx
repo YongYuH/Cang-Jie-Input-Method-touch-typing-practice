@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 
-import CangJieKeyBinding from './CangJieKeyBinding.json'
 import Grid from './components/Grid'
 import Radical from './components/Radical'
 
@@ -9,27 +8,17 @@ const Title = styled.div`
   font-size: 64px;
 `
 
-type GetRadicalList = (englishKeyString: string) => string[]
-const getRadicalList: GetRadicalList = (englishKeyString) => {
-  return englishKeyString.split('').map((key) => CangJieKeyBinding[key])
-}
-
-export type ChineseCharacterMapping = Record<string, string>
-
 interface RadicalQuestionProps {
-  mapping: ChineseCharacterMapping
+  questionChineseCharacter: string
+  radicalList: string[]
 }
 
 const RadicalQuestion = (props: RadicalQuestionProps) => {
-  const { mapping } = props
-
-  const [chineseCharacter, englishKeyString] = Object.entries(mapping)[0]
-
-  const radicalList = getRadicalList(englishKeyString)
+  const { questionChineseCharacter, radicalList } = props
 
   return (
     <Grid gridColumnGap="8px">
-      <Title>{chineseCharacter}</Title>
+      <Title>{questionChineseCharacter}</Title>
       <Grid
         gridAutoColumns="min-content"
         gridAutoFlow="column"

@@ -11,28 +11,31 @@ interface Action {
 }
 
 interface State {
-  currentIndex: number
+  currentTypingIndex: number
+  currentQuestionRadicalList: string[]
   cumulated: string[]
-  maxLength: number
 }
 
 const radicalReducer = (state: State, action: Action) => {
+  const { currentQuestionRadicalList } = state
   const { payload, type } = action
   const { currentPressedKey } = payload
 
+  const maxLength = currentQuestionRadicalList.length
+
   if (currentPressedKey === 'Backspace') {
-    const updatedIndex = state.currentIndex - 1
+    const updatedIndex = state.currentTypingIndex - 1
     if (updatedIndex < 0) {
       return state
     }
 
-    const placeholderLength = state.maxLength - updatedIndex
+    const placeholderLength = maxLength - updatedIndex
 
     return {
       ...state,
-      currentIndex: state.currentIndex - 1,
+      currentTypingIndex: state.currentTypingIndex - 1,
       cumulated: [
-        ...state.cumulated.slice(0, state.currentIndex - 1),
+        ...state.cumulated.slice(0, state.currentTypingIndex - 1),
         ...Array(placeholderLength).fill(' '),
       ],
     }
@@ -46,16 +49,16 @@ const radicalReducer = (state: State, action: Action) => {
 
   switch (type) {
     case 'typing': {
-      const updatedIndex = state.currentIndex + 1
-      if (updatedIndex > state.maxLength) {
+      const updatedIndex = state.currentTypingIndex + 1
+      if (updatedIndex > maxLength) {
         return state
       }
 
       return {
         ...state,
-        currentIndex: updatedIndex,
+        currentTypingIndex: updatedIndex,
         cumulated: [
-          ...state.cumulated.slice(0, state.currentIndex),
+          ...state.cumulated.slice(0, state.currentTypingIndex),
           CangJieKeyBinding[currentPressedKey],
           ...state.cumulated.slice(updatedIndex),
         ],
