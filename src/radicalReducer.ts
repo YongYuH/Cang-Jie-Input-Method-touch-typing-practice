@@ -1,9 +1,18 @@
-import CangJieKeyBinding from './CangJieKeyBinding.json'
+import ChineseCharacterToEnglishKey from './ChineseCharacterToEnglishKey.json'
+import { getIsUpdatedIndexValid } from './utils/getIsUpdatedIndexValid'
+import { getRandomInteger } from './utils/getRandomInteger'
+import {
+  getSelectedChineseCharacterMapping,
+  SelectedChineseCharacterMapping,
+} from './utils/getSelectedChineseCharacterMapping'
+
+const numberOfCharacters = Object.keys(ChineseCharacterToEnglishKey).length
+
 interface ActionPayload {
-  currentPressedKey: string
+  typingRadical: string
 }
 
-type ActionType = 'typing'
+type ActionType = 'typing' | 'backspace'
 
 interface Action {
   payload?: ActionPayload
@@ -11,57 +20,100 @@ interface Action {
 }
 
 interface State {
-  currentTypingIndex: number
-  currentQuestionRadicalList: string[]
+  selectedChineseCharacterMapping: SelectedChineseCharacterMapping
   cumulated: string[]
+  isCurrentTypingCorrect: boolean
+  isCumulatedCorrect: boolean
+  isAllTypingCorrect: boolean
+}
+
+const getInitialState = (randomNumber: number) => {
+  return {
+    selectedChineseCharacterMapping:
+      getSelectedChineseCharacterMapping(randomNumber),
+    cumulated: [],
+    isCurrentTypingCorrect: false,
+    isCumulatedCorrect: false,
+    isAllTypingCorrect: false,
+  }
+}
+
+const randomNumber = getRandomInteger({ max: numberOfCharacters })
+
+export const initialState: State = {
+  selectedChineseCharacterMapping:
+    getSelectedChineseCharacterMapping(randomNumber),
+  cumulated: [],
+  isCurrentTypingCorrect: false,
+  isCumulatedCorrect: false,
+  isAllTypingCorrect: false,
 }
 
 const radicalReducer = (state: State, action: Action) => {
-  const { currentQuestionRadicalList } = state
-  const { payload, type } = action
-  const { currentPressedKey } = payload
+  const currentRadicalList = state.selectedChineseCharacterMapping.radicalList
+  const max = currentRadicalList.length
+  const currentTypingIndex = state.cumulated.length
 
-  const maxLength = currentQuestionRadicalList.length
+  switch (action.type) {
+    case 'backspace': {
+      const updatedIndex = currentTypingIndex - 1
 
-  if (currentPressedKey === 'Backspace') {
-    const updatedIndex = state.currentTypingIndex - 1
-    if (updatedIndex < 0) {
-      return state
-    }
+      const isUpdatingIndexValid = getIsUpdatedIndexValid({
+        max,
+        updatedIndex,
+      })
 
-    const placeholderLength = maxLength - updatedIndex
-
-    return {
-      ...state,
-      currentTypingIndex: state.currentTypingIndex - 1,
-      cumulated: [
-        ...state.cumulated.slice(0, state.currentTypingIndex - 1),
-        ...Array(placeholderLength).fill(' '),
-      ],
-    }
-  }
-
-  const typingRadical = CangJieKeyBinding[currentPressedKey]
-
-  if (typingRadical === undefined) {
-    return state
-  }
-
-  switch (type) {
-    case 'typing': {
-      const updatedIndex = state.currentTypingIndex + 1
-      if (updatedIndex > maxLength) {
+      if (!isUpdatingIndexValid) {
         return state
       }
 
       return {
         ...state,
         currentTypingIndex: updatedIndex,
-        cumulated: [
-          ...state.cumulated.slice(0, state.currentTypingIndex),
-          CangJieKeyBinding[currentPressedKey],
-          ...state.cumulated.slice(updatedIndex),
-        ],
+        cumulated: state.cumulated.slice(0, updatedIndex),
+      }
+    }
+
+    case 'typing': {
+      const updatedIndex = currentTypingIndex + 1
+
+      const isUpdatingIndexValid = getIsUpdatedIndexValid({
+        max,
+        updatedIndex,
+      })
+
+      if (!isUpdatingIndexValid) {
+        return state
+      }
+
+      const updatedCumulated = [
+        ...state.cumulated.slice(0, currentTypingIndex),
+        action.payload.typingRadical,
+        ...state.cumulated.slice(updatedIndex),
+      ]
+
+      const isCurrentTypingCorrect =
+        updatedCumulated[currentTypingIndex] ===
+        currentRadicalList[currentTypingIndex]
+
+      const isCumulatedCorrect =
+        updatedIndex === 1
+          ? isCurrentTypingCorrect
+          : state.isCumulatedCorrect && isCurrentTypingCorrect
+
+      const isAllTypingCorrect = isCumulatedCorrect && updatedIndex === max
+
+      if (isAllTypingCorrect) {
+        return getInitialState(getRandomInteger({ max: numberOfCharacters }))
+      }
+
+      return {
+        ...state,
+        currentTypingIndex: updatedIndex,
+        cumulated: updatedCumulated,
+        isCurrentTypingCorrect,
+        isCumulatedCorrect,
+        isAllTypingCorrect,
       }
     }
 
