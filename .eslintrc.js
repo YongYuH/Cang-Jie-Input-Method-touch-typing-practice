@@ -20,6 +20,7 @@ module.exports = {
         semi: false,
       },
     ],
+    'react/prop-types': 'off',
   },
   settings: {
     react: {
