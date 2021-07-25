@@ -1,29 +1,26 @@
 import React from 'react'
 import styled from 'styled-components'
-import { grid, GridProps } from 'styled-system'
 
-const Grid = styled.div<GridProps>`
-  display: grid;
-  ${grid}
-`
+import Grid from './components/Grid'
+import Radical from './components/Radical'
 
-const Placeholder = styled.div`
-  border-bottom: 1px solid black;
+interface PlaceholderProps {
+  isHighlighted: boolean
+}
+
+const Placeholder = styled.div<PlaceholderProps>`
+  border-bottom: 1px solid ${(props) => (props.isHighlighted ? 'red' : 'black')};
   width: 20px;
   height: 27px;
 `
 
-const Text = styled.div`
-  font-size: 20px;
-  line-height: 28px;
-`
-
 interface TypingRadicalPreviewProps {
   cumulated: string[]
+  currentIndex: number
 }
 
 const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
-  const { cumulated } = props
+  const { cumulated, currentIndex } = props
 
   return (
     <Grid
@@ -33,9 +30,12 @@ const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
     >
       {cumulated.map((radical, index) =>
         radical === ' ' ? (
-          <Placeholder key={`radical-${index}`} />
+          <Placeholder
+            key={`radical-${index}`}
+            isHighlighted={index === currentIndex}
+          />
         ) : (
-          <Text key={`radical-${index}`}>{radical}</Text>
+          <Radical key={`radical-${index}`}>{radical}</Radical>
         )
       )}
     </Grid>
