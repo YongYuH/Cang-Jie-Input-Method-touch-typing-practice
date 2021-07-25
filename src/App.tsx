@@ -1,15 +1,10 @@
 import React, { useEffect, useReducer } from 'react'
 import styled from 'styled-components'
-import { grid, GridProps } from 'styled-system'
 
 import CangJieKeyboard from './CangJieKeyboard'
+import Grid from './components/Grid'
 import { radicalReducer } from './radicalReducer'
 import TypingRadicalPreview from './TypingRadicalPreview'
-
-const Grid = styled.div<GridProps>`
-  display: grid;
-  ${grid}
-`
 
 const KeyboardWrapper = styled.div`
   max-width: 600px;
