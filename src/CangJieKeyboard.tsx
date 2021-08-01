@@ -6,13 +6,7 @@ import Keyboard from 'react-simple-keyboard'
 import CangJieKeyBinding from './CangJieKeyBinding.json'
 
 const CangJieKeyboard = () => {
-  return (
-    <Keyboard
-      mergeDisplay
-      display={CangJieKeyBinding}
-      physicalKeyboardHighlight
-    />
-  )
+  return <Keyboard mergeDisplay display={CangJieKeyBinding} physicalKeyboardHighlight />
 }
 
 export default CangJieKeyboard
