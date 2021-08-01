@@ -3,15 +3,14 @@ import styled from 'styled-components'
 
 import Grid from './components/Grid'
 import Radical from './components/Radical'
-import { CumulatedMap } from './radicalReducer'
+import type { CumulatedMap } from './keyDownRadicalReducer'
 
 interface PlaceholderProps {
   isHighlighted: boolean
 }
 
 const Placeholder = styled.div<PlaceholderProps>`
-  border-bottom: 4px solid
-    ${(props) => (props.isHighlighted ? 'gray' : 'black')};
+  border-bottom: 4px solid ${(props) => (props.isHighlighted ? 'gray' : 'black')};
   width: 20px;
   height: 28px;
 `
@@ -27,16 +26,9 @@ const TypingRadicalPreview = (props: TypingRadicalPreviewProps) => {
   const lengthOfPlaceholder = maxLength - cumulatedMapList.length
 
   return (
-    <Grid
-      gridAutoColumns="min-content"
-      gridAutoFlow="column"
-      gridColumnGap="4px"
-    >
+    <Grid gridAutoColumns="min-content" gridAutoFlow="column" gridColumnGap="4px">
       {cumulatedMapList.map((cumulatedMap, index) => (
-        <Radical
-          key={`radical-${index}`}
-          state={cumulatedMap.isValid ? 'valid' : 'invalid'}
-        >
+        <Radical key={`radical-${index}`} state={cumulatedMap.isValid ? 'valid' : 'invalid'}>
           {cumulatedMap.radical}
         </Radical>
       ))}

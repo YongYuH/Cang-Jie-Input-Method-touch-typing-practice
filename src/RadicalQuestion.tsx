@@ -19,11 +19,7 @@ const RadicalQuestion = (props: RadicalQuestionProps) => {
   return (
     <Grid gridColumnGap="8px">
       <Title>{questionChineseCharacter}</Title>
-      <Grid
-        gridAutoColumns="min-content"
-        gridAutoFlow="column"
-        gridColumnGap="4px"
-      >
+      <Grid gridAutoColumns="min-content" gridAutoFlow="column" gridColumnGap="4px">
         {radicalList.map((radical, index) => (
           <Radical key={`question-radical-${index}`}>{radical}</Radical>
         ))}

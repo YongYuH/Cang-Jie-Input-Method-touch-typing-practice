@@ -1,52 +1,39 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useReducer } from 'react'
 import styled from 'styled-components'
 
-import CangJieKeyBinding from './CangJieKeyBinding.json'
 import CangJieKeyboard from './CangJieKeyboard'
 import Grid from './components/Grid'
+import type { RadicalState } from './keyDownRadicalReducer'
+import { getInitialState, keyDownRadicalReducer } from './keyDownRadicalReducer'
 import RadicalQuestion from './RadicalQuestion'
-import { initialState, radicalReducer } from './radicalReducer'
 import TypingRadicalPreview from './TypingRadicalPreview'
+import { useKeyDown } from './useKeyDown'
 
 const KeyboardWrapper = styled.div`
   max-width: 600px;
 `
 
-const App = () => {
-  const [state, dispatch] = useReducer(radicalReducer, initialState)
+const initialState: RadicalState = getInitialState()
 
-  const hanleKeyDown = (event: KeyboardEvent) => {
+const App = () => {
+  const [state, dispatch] = useReducer(keyDownRadicalReducer, initialState)
+
+  const keyDownHandler = (event: KeyboardEvent) => {
     const currentPressedKey = event.key
-    if (currentPressedKey === 'Backspace') {
-      dispatch({
-        type: 'backspace',
-      })
-    } else {
-      const typingRadical = CangJieKeyBinding[currentPressedKey]
-      if (typingRadical !== undefined) {
-        dispatch({
-          type: 'typing',
-          payload: {
-            typingRadical,
-          },
-        })
-      }
-    }
+    dispatch({
+      type: 'keyDown',
+      payload: {
+        key: currentPressedKey,
+      },
+    })
   }
 
-  useEffect(() => {
-    window.addEventListener('keydown', hanleKeyDown)
-    return () => {
-      window.removeEventListener('keydown', hanleKeyDown)
-    }
-  }, [])
+  useKeyDown(keyDownHandler)
 
   return (
     <Grid gridRowGap="32px">
       <RadicalQuestion
-        questionChineseCharacter={
-          state.selectedChineseCharacterMapping.character
-        }
+        questionChineseCharacter={state.selectedChineseCharacterMapping.character}
         radicalList={state.selectedChineseCharacterMapping.radicalList}
       />
       <TypingRadicalPreview
