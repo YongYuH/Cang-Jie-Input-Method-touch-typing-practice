@@ -7,6 +7,7 @@ type CumulatedUpdateType =
   | 'push'
   | 'pushFirst'
   | 'pushLast'
+  | 'pushLastWhenSingleRadical'
   | 'pushOverflow'
   | 'pop'
   | 'popEmpty'
@@ -29,6 +30,11 @@ const getCumulatedUpdateType: GetCumulatedUpdateType = (args) => {
     cumulated,
     updateAction,
   ])
+    .with(
+      [[], { type: 'push' }],
+      () => targetList.length === 1,
+      () => 'pushLastWhenSingleRadical'
+    )
     .with([[], { type: 'pop' }], () => 'popEmpty')
     .with([[], { type: 'push' }], () => 'pushFirst')
     .with(

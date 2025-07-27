@@ -78,6 +78,16 @@ const keyDownRadicalReducer = (state: RadicalState, action: Action) => {
     .with([__, 'skip'], () => state)
     .with([__, 'popEmpty'], () => state)
     .with([__, 'pushOverflow'], () => state)
+    .with([__, 'pushLastWhenSingleRadical'], () => {
+      if (isCurrentTypingKeyValid) {
+        return getInitialState()
+      }
+      // If typing is invalid for a single-radical character, treat it like a normal push.
+      return {
+        ...state,
+        cumulatedMapList: [{ radical: typingRadical, isValid: false }],
+      }
+    })
     .with([__, 'pushFirst'], () => {
       const pushedCumulatedMapList: CumulatedMap[] = [
         ...originalCumulatedMapList,
